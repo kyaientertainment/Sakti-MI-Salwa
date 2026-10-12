@@ -56,7 +56,6 @@
                 <h3 class="text-xs text-gray-400 mt-1">MI Salafiyah Wareng</h3>
             </div>
             
-            <!-- FORM LOGIN EMAIL & PASSWORD -->
             <form id="login-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email Pengguna</label>
@@ -75,7 +74,7 @@
                 <span class="h-px bg-gray-200 flex-1"></span>
             </div>
 
-            <!-- TOMBOL LOGIN GOOGLE -->
+            <!-- Tombol Login Google -->
             <button id="btn-google-login" type="button" class="mt-5 w-full flex items-center justify-center bg-white border-2 border-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition shadow-sm">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-3">
                 Masuk dengan Akun Google
@@ -153,10 +152,16 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700">Tindakan / Sikap yang Dicatat</label>
+                    <label class="block text-sm font-semibold text-gray-700">Kategori Tindakan / Sikap</label>
                     <select id="select-kategori" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-indigo-500">
                         <option value="">-- Pilih Kategori Tindakan --</option>
                     </select>
+                </div>
+
+                <!-- FITUR BARU: DETAIL KEJADIAN -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700">Detail Kejadian (Opsional)</label>
+                    <textarea id="input-detail" rows="2" placeholder="Contoh: Tidak memakai dasi saat upacara bendera, atau Mewakili sekolah lomba MTQ." class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-indigo-500 bg-white text-sm" disabled></textarea>
                 </div>
 
                 <div class="pt-4 border-t">
@@ -339,7 +344,7 @@
                         <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
                             <tr>
                                 <th class="px-6 py-4 font-bold w-32 text-center">JENIS</th>
-                                <th class="px-6 py-4 font-bold">NAMA TINDAKAN / SIKAP</th>
+                                <th class="px-6 py-4 font-bold">KATEGORI TINDAKAN / SIKAP</th>
                                 <th class="px-6 py-4 font-bold text-center w-24">POIN</th>
                                 <th class="px-6 py-4 font-bold text-center w-36">AKSI</th>
                             </tr>
@@ -453,7 +458,7 @@
                                     <th class="px-4 py-3 font-bold">TANGGAL</th>
                                     <th class="px-4 py-3 font-bold">KELAS</th>
                                     <th class="px-4 py-3 font-bold">NAMA SISWA</th>
-                                    <th class="px-4 py-3 font-bold">TINDAKAN</th>
+                                    <th class="px-4 py-3 font-bold">KATEGORI & DETAIL KEJADIAN</th>
                                     <th class="px-4 py-3 font-bold text-center">JENIS</th>
                                     <th class="px-4 py-3 font-bold text-center w-24">AKSI</th>
                                 </tr>
@@ -554,8 +559,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Tindakan / Sikap</label>
-                    <input type="text" id="new-kategori-nama" required placeholder="Contoh: Datang Tepat Waktu" class="mt-1 w-full px-3 py-2 border rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700">Kategori Tindakan / Sikap</label>
+                    <input type="text" id="new-kategori-nama" required placeholder="Contoh: Kerapian Atribut" class="mt-1 w-full px-3 py-2 border rounded-lg">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Bobot Poin</label>
@@ -582,7 +587,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Tindakan / Sikap</label>
+                    <label class="block text-sm font-medium text-gray-700">Kategori Tindakan / Sikap</label>
                     <input type="text" id="edit-kategori-nama" required class="mt-1 w-full px-3 py-2 border rounded-lg">
                 </div>
                 <div>
@@ -615,14 +620,13 @@
     <!-- SCRIPT LOGIKA UTAMA FIREBASE & APP SAKTI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // IMPORT FIREBASE AUTH LENGKAP (Termasuk Email & Password)
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, writeBatch } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // ==========================================
-        // CONFIG FIREBASE SAKTI (Milik Anda)
+        // CONFIG FIREBASE SAKTI
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyAxghjlxoSksirj_IZk4fNomFXOzjHPnhQ",
@@ -711,7 +715,7 @@
                 } else {
                     adminPage.classList.add('hidden');
                     guruPage.classList.remove('hidden');
-                    loadKamusUntukGuru(); // Load dropdown tindakan
+                    loadKamusUntukGuru();
                 }
             } else {
                 loginPage.classList.remove('hidden');
@@ -721,7 +725,6 @@
             }
         });
 
-        // Event Listener Login Email/Password
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -735,7 +738,6 @@
             }
         });
 
-        // Event Listener Login Google
         document.getElementById('btn-google-login').addEventListener('click', async () => {
             showLoading('Mengarahkan ke Google...');
             try {
@@ -852,7 +854,6 @@
             }
         };
 
-        // Import Excel Siswa (Batch Write)
         document.getElementById('file-import-siswa').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -989,7 +990,6 @@
             }
         };
 
-        // Import Excel Kategori Tindakan (Batch Write)
         document.getElementById('file-import-kategori').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -1067,10 +1067,10 @@
                 globalKamus.sort((a,b) => a.jenis.localeCompare(b.jenis) || a.poin - b.poin);
                 
                 const selKategori = document.getElementById('select-kategori');
-                selKategori.innerHTML = '<option value="">-- Pilih Tindakan/Sikap --</option>';
+                selKategori.innerHTML = '<option value="">-- Pilih Kategori Tindakan --</option>';
                 globalKamus.forEach(k => {
                     const icon = k.jenis === "Prestasi" ? "🌟" : "⚠️";
-                    selKategori.innerHTML += `<option value="${k.nama_tindakan}" data-jenis="${k.jenis}">${icon} [${k.poin} Poin] - ${k.nama_tindakan}</option>`;
+                    selKategori.innerHTML += `<option value="${k.nama_tindakan}" data-jenis="${k.jenis}">${icon} [${k.poin} Poin] -${k.nama_tindakan}</option>`;
                 });
             } catch (err) {
                 console.error("Gagal load kamus:", err);
@@ -1105,7 +1105,7 @@
                     belumDicatatList.forEach((s, idx) => {
                         listContainer.innerHTML += `
                             <div class="bg-gray-50 px-3 py-1.5 rounded border border-gray-200 text-gray-700 font-medium flex items-center justify-between">
-                                <span>${idx + 1}. ${s.nama}</span>
+                                <span>${idx + 1}.${s.nama}</span>
                                 <span class="text-[10px] text-gray-400 font-normal">Aman / Belum ada catatan</span>
                             </div>`;
                     });
@@ -1120,11 +1120,13 @@
             const kelas = e.target.value;
             const selSiswa = document.getElementById('select-siswa');
             const selKategori = document.getElementById('select-kategori');
+            const inputDetail = document.getElementById('input-detail');
             document.getElementById('info-siswa').classList.add('hidden');
             
             selSiswa.innerHTML = '<option value="">-- Memuat... --</option>';
             selSiswa.disabled = true;
             selKategori.disabled = true;
+            inputDetail.disabled = true;
 
             if(!kelas) {
                 document.getElementById('box-belum-setor').classList.add('hidden');
@@ -1146,6 +1148,7 @@
                 studentsData.forEach(s => selSiswa.innerHTML += `<option value="${s.id}">${s.nama}</option>`);
                 selSiswa.disabled = false;
                 selKategori.disabled = false;
+                inputDetail.disabled = false;
 
                 updateBelumSetorList();
             } catch (error) {
@@ -1167,7 +1170,6 @@
             document.getElementById('txt-riwayat').innerText = student.catatan_terakhir || "-";
             document.getElementById('txt-status').innerText = student.status_terakhir || "-";
             
-            // Logika Prestasi 3x Beruntun (Siswa Teladan)
             const badgeGuru = document.getElementById('badge-prestasi-guru');
             try {
                 const qCek = query(collection(db, "records"), where("nama_siswa", "==", student.nama));
@@ -1195,15 +1197,16 @@
             const selKategori = document.getElementById('select-kategori');
             const tindakan = selKategori.value;
             const jenisTindakan = selKategori.options[selKategori.selectedIndex].getAttribute('data-jenis');
+            const detailKejadian = document.getElementById('input-detail').value.trim();
 
-            if(!kelas || !studentId || !tindakan) return Swal.fire('Error', 'Lengkapi form input.', 'warning');
+            if(!kelas || !studentId || !tindakan) return Swal.fire('Error', 'Lengkapi form input kategori tindakan.', 'warning');
 
             showLoading('Mengecek & Menyimpan...');
             
             const qCek = query(collection(db, "records"), where("nama_siswa", "==", namaSiswa), where("tanggal", "==", tgl), where("tindakan_nama", "==", tindakan));
             const cekSnap = await getDocs(qCek);
             if(!cekSnap.empty) {
-                return Swal.fire('Ditolak', `Catatan ${tindakan} untuk ${namaSiswa} pada tanggal ini sudah ada.`, 'error');
+                return Swal.fire('Ditolak', `Catatan kategori ${tindakan} untuk${namaSiswa} pada tanggal ini sudah ada.`, 'error');
             }
 
             try {
@@ -1212,7 +1215,8 @@
                     kelas: kelas,
                     nama_siswa: namaSiswa,
                     tindakan_nama: tindakan,
-                    jenis: jenisTindakan
+                    jenis: jenisTindakan,
+                    detail_kejadian: detailKejadian
                 });
 
                 await updateDoc(doc(db, "students", studentId), {
@@ -1229,6 +1233,7 @@
                 Swal.fire('Sukses!', 'Catatan Karakter berhasil disimpan.', 'success').then(() => {
                     document.getElementById('select-siswa').value = "";
                     document.getElementById('select-kategori').value = "";
+                    document.getElementById('input-detail').value = "";
                     document.getElementById('info-siswa').classList.add('hidden');
                     updateBelumSetorList();
                 });
@@ -1278,13 +1283,20 @@
                 const badgeClass = data.jenis === "Prestasi" 
                     ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
                     : "bg-amber-100 text-amber-800 border-amber-300";
+                
+                const detailHtml = data.detail_kejadian 
+                    ? `<div class="text-[10px] text-gray-500 mt-1 leading-tight"><i class="fa-solid fa-circle-info text-indigo-400 mr-1"></i>${data.detail_kejadian}</div>` 
+                    : ``;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition">
                         <td class="px-4 py-3 font-medium text-gray-700">${data.tanggal}</td>
                         <td class="px-4 py-3 text-gray-600">${data.kelas}</td>
                         <td class="px-4 py-3 font-semibold text-gray-800">${data.nama_siswa}</td>
-                        <td class="px-4 py-3 text-gray-700">${data.tindakan_nama}</td>
+                        <td class="px-4 py-3 text-gray-700">
+                            <div class="font-semibold text-gray-800">${data.tindakan_nama}</div>
+                            ${detailHtml}
+                        </td>
                         <td class="px-4 py-3 text-center">
                             <span class="${badgeClass} border px-2 py-0.5 rounded-full text-[11px] font-bold shadow-sm">
                                 ${data.jenis}
@@ -1330,7 +1342,7 @@
 
             doc.setFont("helvetica", "bold");
             doc.setFontSize(16);
-            doc.setTextColor(49, 46, 129); // Indigo 900
+            doc.setTextColor(49, 46, 129);
             doc.text("SAKTI - Pencatatan Karakter Siswa", pageWidth / 2, 16, { align: "center" });
 
             doc.setFont("helvetica", "bold");
@@ -1349,17 +1361,19 @@
             doc.line(14, 34, pageWidth - 14, 34);
 
             const bodyPDF = data.map((row, idx) => {
-                return [idx + 1, row.nama_siswa, row.kelas, row.tindakan_nama, row.jenis];
+                // Menggabungkan Kategori dan Detail untuk PDF
+                const keteranganDetail = row.detail_kejadian ? `${row.tindakan_nama}\n(Ket: ${row.detail_kejadian})` : row.tindakan_nama;
+                return [idx + 1, row.nama_siswa, row.kelas, keteranganDetail, row.jenis];
             });
 
             doc.autoTable({
                 startY: 38,
-                head: [['No', 'Nama Siswa', 'Kelas', 'Tindakan / Sikap', 'Keterangan']],
+                head: [['No', 'Nama Siswa', 'Kelas', 'Kategori & Detail Kejadian', 'Keterangan']],
                 body: bodyPDF,
                 theme: 'grid',
                 headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
                 styles: { fontSize: 9, cellPadding: 2.5 },
-                columnStyles: { 0: { cellWidth: 12, halign: 'center' }, 1: { cellWidth: 50 }, 2: { cellWidth: 35 }, 3: { cellWidth: 55 }, 4: { cellWidth: 30, halign: 'center' } }
+                columnStyles: { 0: { cellWidth: 10, halign: 'center' }, 1: { cellWidth: 45 }, 2: { cellWidth: 35 }, 3: { cellWidth: 65 }, 4: { cellWidth: 25, halign: 'center' } }
             });
 
             const finalY = doc.lastAutoTable.finalY + 12;
@@ -1438,7 +1452,8 @@
                 "Tanggal": row.tanggal,
                 "Nama Siswa": row.nama_siswa,
                 "Kelas": row.kelas,
-                "Tindakan / Sikap": row.tindakan_nama,
+                "Kategori Tindakan / Sikap": row.tindakan_nama,
+                "Detail Kejadian": row.detail_kejadian || "-",
                 "Keterangan": row.jenis
             }));
 
