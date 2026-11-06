@@ -29,7 +29,7 @@
     <!-- Chart.js untuk Grafik Statistik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- FontAwesome untuk Ikon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/css/all.min.css">
     
     <style>
         .hidden { display: none !important; }
@@ -146,22 +146,22 @@
                             <i class="fa-solid fa-bolt text-amber-500 mr-1"></i> Pintasan Cepat (Quick-Tap)
                         </label>
                         <div class="flex flex-wrap gap-2 text-xs">
-                            <button type="button" onclick="selectQuickChip('Terlambat Masuk Sekolah')" class="chip-btn bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
+                            <button type="button" onclick="selectQuickChip('Terlambat')" class="chip-btn bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
                                 ⚠️ Terlambat
                             </button>
-                            <button type="button" onclick="selectQuickChip('Tidak Memakai Peci / Atribut')" class="chip-btn bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
+                            <button type="button" onclick="selectQuickChip('Peci')" class="chip-btn bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
                                 ⚠️ Tidak Pakai Peci
                             </button>
-                            <button type="button" onclick="selectQuickChip('Merapikan Sepatu & Loker')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
+                            <button type="button" onclick="selectQuickChip('Sepatu')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
                                 🌟 Merapikan Sepatu
                             </button>
-                            <button type="button" onclick="selectQuickChip('Lomba MTQ / Tilawah')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
+                            <button type="button" onclick="selectQuickChip('MTQ')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
                                 🌟 Lomba MTQ
                             </button>
-                            <button type="button" onclick="selectQuickChip('Lomba KSM (Kompetisi Sains)')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
+                            <button type="button" onclick="selectQuickChip('KSM')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
                                 🌟 Lomba KSM
                             </button>
-                            <button type="button" onclick="selectQuickChip('Lomba Olahraga (POPDA)')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
+                            <button type="button" onclick="selectQuickChip('POPDA')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
                                 🌟 Lomba POPDA
                             </button>
                         </div>
@@ -704,7 +704,7 @@
         }
     </script>
 
-    <!-- SCRIPT LOGIKA UTAMA SAKTI (WITHOUT AUTHENTICATION & WITHOUT POINTS) -->
+    <!-- SCRIPT LOGIKA UTAMA SAKTI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, writeBatch, setDoc, getDoc } 
@@ -1198,6 +1198,7 @@
         // Event Listener Toggle Dynamic Field Prestasi Lomba
         document.getElementById('select-kategori').addEventListener('change', (e) => {
             const selOption = e.target.options[e.target.selectedIndex];
+            if (!selOption) return;
             const jenis = selOption.getAttribute('data-jenis');
             const boxPrestasi = document.getElementById('box-detail-prestasi');
             
@@ -1208,15 +1209,47 @@
             }
         });
 
-        // Quick Chip Helper Function
-        window.selectQuickChip = (namaTindakan) => {
+        // SMART QUICK CHIPS HELPER FUNCTION
+        window.selectQuickChip = (keyword) => {
             const selKategori = document.getElementById('select-kategori');
             if (selKategori.disabled) {
                 return Swal.fire('Pilih Kelas Siswa', 'Silakan pilih Kelas dan Nama Siswa terlebih dahulu.', 'warning');
             }
             
-            selKategori.value = namaTindakan;
-            selKategori.dispatchEvent(new Event('change'));
+            let matchedIndex = -1;
+            const lowerKey = keyword.toLowerCase();
+
+            // 1. Exact Value Match
+            for (let i = 0; i < selKategori.options.length; i++) {
+                if (selKategori.options[i].value.toLowerCase() === lowerKey) {
+                    matchedIndex = i;
+                    break;
+                }
+            }
+
+            // 2. Substring Match (Search option text / value)
+            if (matchedIndex === -1) {
+                for (let i = 0; i < selKategori.options.length; i++) {
+                    const optText = selKategori.options[i].text.toLowerCase();
+                    const optVal = selKategori.options[i].value.toLowerCase();
+                    if (optVal.includes(lowerKey) || optText.includes(lowerKey)) {
+                        matchedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (matchedIndex !== -1 && matchedIndex > 0) {
+                selKategori.selectedIndex = matchedIndex;
+                selKategori.dispatchEvent(new Event('change'));
+            } else {
+                Swal.fire({
+                    title: 'Tindakan Belum Ada',
+                    text: `Kategori "${keyword}" belum ditemukan di Kamus Tindakan. Silakan pilih manual dari dropdown atau tambahkan di Panel Admin.`,
+                    icon: 'info',
+                    confirmButtonColor: '#4f46e5'
+                });
+            }
         };
 
         async function updateBelumSetorList() {
