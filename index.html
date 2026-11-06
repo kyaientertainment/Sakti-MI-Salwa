@@ -147,22 +147,22 @@
                         </label>
                         <div class="flex flex-wrap gap-2 text-xs">
                             <button type="button" onclick="selectQuickChip('Terlambat')" class="chip-btn bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
-                                ⚠️ Terlambat
+                                ⚠️ Terlambat atau Bolos
                             </button>
                             <button type="button" onclick="selectQuickChip('Peci')" class="chip-btn bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
-                                ⚠️ Tidak Pakai Peci
+                                ⚠️ Tidak Pakai Atribut Lengkap
                             </button>
                             <button type="button" onclick="selectQuickChip('Sepatu')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
-                                🌟 Merapikan Sepatu
+                                🌟 Tidak Membawa Buku
                             </button>
                             <button type="button" onclick="selectQuickChip('MTQ')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
-                                🌟 Lomba MTQ
+                                🌟 Seragam Tidak Sesuai
                             </button>
                             <button type="button" onclick="selectQuickChip('KSM')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
-                                🌟 Lomba KSM
+                                🌟 Merusak Fasilitas Sekolah
                             </button>
                             <button type="button" onclick="selectQuickChip('POPDA')" class="chip-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-full font-medium shadow-sm">
-                                🌟 Lomba POPDA
+                                🌟 Membuang Sampah Sembarangan
                             </button>
                         </div>
                     </div>
@@ -810,7 +810,7 @@
                 confirmButtonColor: '#4f46e5',
                 cancelButtonText: 'Batal'
             }).then((result) => {
-                if (result.value === '1234') { // Default PIN Admin
+                if (result.value === '54264') { // Default PIN Admin
                     document.getElementById('guru-page').classList.add('hidden');
                     document.getElementById('admin-page').classList.remove('hidden');
                     document.getElementById('btn-toggle-admin').classList.add('hidden');
